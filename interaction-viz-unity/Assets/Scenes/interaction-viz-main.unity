@@ -237,6 +237,7 @@ GameObject:
   m_Component:
   - component: {fileID: 541874836}
   - component: {fileID: 541874835}
+  - component: {fileID: 541874837}
   m_Layer: 0
   m_Name: Pose Viz
   m_TagString: Untagged
@@ -290,6 +291,43 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &541874837
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 541874834}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f29d37666870f24478dc2a97db2dce72, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  videoPixelWidth: 1920
+  videoPixelHeight: 1080
+  videoFPS: 30
+  openPoseJsonPath: Assets/Resources/Data/v1_json
+  currentOpenPoseJson:
+    version: 0
+    people: []
+  currentJsonString: 
+  currentJsonFrame: 0
+  maxJsonFrameCount: 900
+  confidentThreshold: 0.01
+  helperMaterials:
+  - {fileID: 2100000, guid: 26f76f06e914d544c8b0f58d6c6a2544, type: 2}
+  - {fileID: 2100000, guid: 7dc12fd3e51928e41b5261ce70014069, type: 2}
+  - {fileID: 2100000, guid: 355884f31553aec4c9e0ad6d6db26e9d, type: 2}
+  cam: {fileID: 1757628985}
+  groundSrf: {fileID: 190733578}
+  sphereSizeWorld: 0.05
+  sphereSizeScreen: 0.002
+  imageVideo: {fileID: 830465357}
+  bodyPartLinkJsonFile: Assets/Resources/Data/body part links.json
+  bodyPartLinks:
+    links: []
+  distroyDuration: 100
+  linkWidth: 0.02
+  colorAlpha: 0.1
 --- !u!1001 &543126386
 Prefab:
   m_ObjectHideFlags: 0
