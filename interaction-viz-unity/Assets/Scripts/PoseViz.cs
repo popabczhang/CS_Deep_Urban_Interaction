@@ -38,9 +38,11 @@ public class PoseViz : MonoBehaviour
     public Image imageVideo;
     public string bodyPartLinkJsonFile = "Assets/Resources/Data/body part links.json";
     public BodyPartLinks bodyPartLinks;
-    public float distroyDuration; // deltatime multiplier
+    public float lifeSpan; // (distroyDuration) deltatime multiplier
     public float linkWidth;
     public float colorAlpha;
+    public Slider sliderLifeSpan;
+    public List<GameObject> tmpVizGOs = new List<GameObject>();
 
 
     void Start()
@@ -76,6 +78,8 @@ public class PoseViz : MonoBehaviour
             float confRightFoot = currentOpenPoseJson.people[i].pose_keypoints[3 * jointIDRightFoot + conf];
             Color currentPersonColor = helperMaterials[i % 3].color;
             Material currentPersonMaterial = helperMaterials[i % 3];
+            Color colorTmp = currentPersonMaterial.color;
+            currentPersonMaterial.color = new Color(colorTmp.r, colorTmp.g, colorTmp.b, colorAlpha);
 
             // only viz if left and right feet are both present confidently
             if ((xLeftFoot > 0.0f && yLeftFoot > 0.0f && confLeftFoot >= confidentThreshold) && (xRightFoot > 0.0f && yRightFoot > 0.0f && confRightFoot >= confidentThreshold))
@@ -99,7 +103,7 @@ public class PoseViz : MonoBehaviour
                     // creat a quad plane for intersection
                     GameObject plane = GameObject.CreatePrimitive(PrimitiveType.Cube);
                     //cleanups.Add(plane);
-                    Destroy(plane, Time.deltaTime * distroyDuration);
+                    Destroy(plane, Time.deltaTime * lifeSpan);
                     plane.transform.localScale = new Vector3(10f, 10f, 0.001f);
                     // move to viz location
                     plane.transform.position = hit.point;
@@ -139,8 +143,10 @@ public class PoseViz : MonoBehaviour
                             // key point
                             // add sphere and remove its collider
                             GameObject sphere3 = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+                            sphere3.name = "myJoint";
+                            tmpVizGOs.Add(sphere3);
                             Destroy(sphere3.GetComponent<Collider>());
-                            Destroy(sphere3, Time.deltaTime * distroyDuration);
+                            Destroy(sphere3, Time.deltaTime * lifeSpan);
                             sphere3.transform.localScale = new Vector3(sphereSizeWorld * c, sphereSizeWorld * c, sphereSizeWorld * c);
                             sphere3.GetComponent<Renderer>().material = currentPersonMaterial;
                             // move sphere to viz location
@@ -162,7 +168,8 @@ public class PoseViz : MonoBehaviour
                         // if both key points of the link are confident enough
                         if (sc >= confidentThreshold && ec >= confidentThreshold)
                         {
-                            DrawLine(startProjPos, endProjPos, linkWidth * (sc + ec) / 2, currentPersonMaterial, Time.deltaTime * distroyDuration);
+                            GameObject link = DrawLine(startProjPos, endProjPos, linkWidth * (sc + ec) / 2, currentPersonMaterial, Time.deltaTime * lifeSpan);
+                            tmpVizGOs.Add(link);
                         }
                     }
 
@@ -176,9 +183,9 @@ public class PoseViz : MonoBehaviour
     }
 
 
-    void DrawLine(Vector3 start, Vector3 end, float w, Material m, float duration = 0.2f)
+    GameObject DrawLine(Vector3 start, Vector3 end, float w, Material m, float duration = 0.2f)
     {
-        GameObject myLine = new GameObject();
+        GameObject myLine = new GameObject("myLine");
         myLine.transform.position = start;
         myLine.AddComponent<LineRenderer>();
         LineRenderer lr = myLine.GetComponent<LineRenderer>();
@@ -188,6 +195,17 @@ public class PoseViz : MonoBehaviour
         lr.SetPosition(0, start);
         lr.SetPosition(1, end);
         Destroy(myLine, duration);
+        return myLine;
+    }
+
+
+    void OnUpdateLifeSpan()
+    {
+        foreach(GameObject myGO in tmpVizGOs)
+        {
+            Destroy(myGO);
+        }
+        lifeSpan = sliderLifeSpan.value * 299.0f + 1.0f;
     }
 
 

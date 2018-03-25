@@ -12,7 +12,7 @@ public class UpdateImageAlphaWithSlider : MonoBehaviour {
         Image img = GetComponent<Image>();
         Color c = img.material.color;
         img.material.color = new Color(c.r, c.g, c.b, slider.value);
-        Debug.Log("now!");
+        //Debug.Log("now!");
     }
 
 }
