@@ -47,7 +47,13 @@ public class PoseViz : MonoBehaviour
 
     void Start()
     {
-
+        /*
+        thoughts on how to stablize the color/ID in the viz
+        do one pass before everthing and save new json files?
+        use person center
+        need to search for last 1 - 5 frame's each person center if close enough
+        need a the UID database? 
+        */
     }
 
 
