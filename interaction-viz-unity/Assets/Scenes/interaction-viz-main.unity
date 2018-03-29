@@ -803,7 +803,6 @@ MonoBehaviour:
   currentOpenPoseJson:
     version: 0
     people: []
-  currentJsonString: 
   currentJsonFrame: 0
   maxJsonFrameCount: 900
   confidentThreshold: 0.01
@@ -825,6 +824,8 @@ MonoBehaviour:
   sliderLifeSpan: {fileID: 2073772193}
   sliderAlpha: {fileID: 2000391839}
   tmpVizGOs: []
+  globalPeopleList: []
+  existCheckDistance: 0.25
 --- !u!1001 &543126386
 Prefab:
   m_ObjectHideFlags: 0

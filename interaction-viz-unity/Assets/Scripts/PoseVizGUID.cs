@@ -21,7 +21,7 @@ public class PoseVizGUID : MonoBehaviour
     public int videoFPS;
     public string openPoseJsonPath = "Assets/Resources/Data/v1_json";
     public OpenPoseJson currentOpenPoseJson;
-    public string currentJsonString;
+    private string currentJsonString;
     public int currentJsonFrame;
     public int maxJsonFrameCount;
     const int jointIDLeftFoot = 10;
@@ -153,9 +153,8 @@ public class PoseVizGUID : MonoBehaviour
                     }
                     else
                     {
-                        Debug.Log("exist, update the one in the list");
+                        //Debug.Log("exist, update the one in the list");
                     }
-
 
                     // loop each key point
                     List<Vector3> keyPtProjPoss = new List<Vector3>();
@@ -223,6 +222,25 @@ public class PoseVizGUID : MonoBehaviour
             }
         }
 
+        
+        // viz the current GUID for each person in global people list
+        foreach(PeopleObj pplObj in globalPeopleList)
+        {
+            GameObject guidText = DrawText(pplObj.GUID.ToString(), pplObj.posJoint1Projected + new Vector3(0f, 0.5f, 0f), 0.075f, new Color(1f, 1f, 1f, colorAlpha), TextAlignment.Center, TextAnchor.MiddleCenter);
+            tmpVizGOs.Add(guidText);
+            Destroy(guidText, Time.deltaTime * lifeSpan);
+            // rotate face to cam
+            guidText.transform.LookAt(new Vector3(cam.transform.position.x, guidText.transform.position.y, cam.transform.position.z));
+            guidText.transform.Rotate(new Vector3(0f, 180f, 0f));
+        }
+
+
+        // purge missing object for tmpVizGOs every frame{
+        for (int t1 = tmpVizGOs.Count - 1; t1 > -1; t1 --)
+        {
+            if (tmpVizGOs[t1] == null)
+                tmpVizGOs.RemoveAt(t1);
+        }
 
     }
 
@@ -271,6 +289,8 @@ public class PoseVizGUID : MonoBehaviour
             if (d <= existCheckDistance)
             {
                 blnExist = true;
+                // keep the GUID
+                currentPeopleObj.GUID = pplObj.GUID;
                 // update the global people obj list
                 globalPeopleList[i] = currentPeopleObj;
                 break;
@@ -286,6 +306,7 @@ public class PoseVizGUID : MonoBehaviour
         {
             Destroy(myGO);
         }
+        tmpVizGOs = new List<GameObject>();
         lifeSpan = sliderLifeSpan.value * 299.0f + 1.0f;
     }
 
