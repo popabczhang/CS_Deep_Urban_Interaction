@@ -937,6 +937,8 @@ MonoBehaviour:
   globalPeopleList: []
   existCheckDistance: 0.2
   trajectoryWidth: 0.01
+  interactionWidth: 0.025
+  toggleInteration: {fileID: 1881948585}
 --- !u!1001 &543126386
 Prefab:
   m_ObjectHideFlags: 0

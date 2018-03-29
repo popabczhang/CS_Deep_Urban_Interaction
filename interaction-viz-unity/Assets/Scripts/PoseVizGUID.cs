@@ -49,6 +49,8 @@ public class PoseVizGUID : MonoBehaviour
     public List<PeopleObj> globalPeopleList = new List<PeopleObj>();
     public float existCheckDistance;
     public float trajectoryWidth;
+    public float interactionWidth;
+    public Toggle toggleInteration;
 
 
     void Start()
@@ -77,6 +79,13 @@ public class PoseVizGUID : MonoBehaviour
         // parsing body part link json
         string bodyPartLinkJsonString = System.IO.File.ReadAllText(bodyPartLinkJsonFile);
         bodyPartLinks = JsonUtility.FromJson<BodyPartLinks>(bodyPartLinkJsonString);
+        
+
+        // put isOnScreen to false for all the people obj in global list every frame
+        foreach (PeopleObj pplObj in globalPeopleList)
+        {
+            pplObj.isOnScreen = false;
+        }
 
 
         // loop people in json
@@ -149,11 +158,6 @@ public class PoseVizGUID : MonoBehaviour
                     currentPeopleObj.GUID = (int)Random.Range(0f, 999999999f);
                     currentPeopleObj.centerBottomPositionWorld = hit.point;
                     currentPeopleObj.posJoint1Projected = hit3.point;
-                    // put isOnScreen to false for all the people obj in global list first
-                    foreach (PeopleObj pplObj in globalPeopleList)
-                    {
-                        pplObj.isOnScreen = false;
-                    }
                     // this will overwite isOnScreen
                     currentPeopleObj.isOnScreen = true;
                     // check exist and update at same time in "IsExist" function
@@ -238,7 +242,16 @@ public class PoseVizGUID : MonoBehaviour
         // viz the current GUID for each person in global people list
         foreach(PeopleObj pplObj in globalPeopleList)
         {
-            GameObject guidText = DrawText(pplObj.GUID.ToString(), pplObj.posJoint1Projected + new Vector3(0f, 0.5f, 0f), 0.075f, new Color(1f, 1f, 1f, colorAlpha), TextAlignment.Center, TextAnchor.MiddleCenter);
+            Color c = new Color();
+            if (pplObj.isOnScreen)
+            {
+                c = new Color(1f, 1f, 1f, colorAlpha);
+            }
+            else
+            {
+                c = new Color(0f, 0f, 0f, colorAlpha);
+            }
+            GameObject guidText = DrawText(pplObj.GUID.ToString(), pplObj.posJoint1Projected + new Vector3(0f, 0.5f, 0f), 0.075f, c, TextAlignment.Center, TextAnchor.MiddleCenter);
             tmpVizGOs.Add(guidText);
             Destroy(guidText, Time.deltaTime * lifeSpan);
             // rotate face to cam
@@ -250,15 +263,36 @@ public class PoseVizGUID : MonoBehaviour
         // viz the trajectory for each person in global people list
         foreach (PeopleObj pplObj in globalPeopleList)
         {
-            for(int t2 = pplObj.trajectory.Count - 1; t2 > 0; t2 --)
+            for (int t2 = pplObj.trajectory.Count - 1; t2 > 0; t2--)
             {
-                GameObject trajectoryLine = DrawLine(pplObj.trajectory[t2], pplObj.trajectory[t2-1], trajectoryWidth, helperMaterials[2], Time.deltaTime);
+                GameObject trajectoryLine = DrawLine(pplObj.trajectory[t2], pplObj.trajectory[t2 - 1], trajectoryWidth, helperMaterials[2], Time.deltaTime);
                 tmpVizGOs.Add(trajectoryLine);
             }
         }
 
 
-        // purge missing object for tmpVizGOs every frame{
+        // viz the dummy interaction links between each two onscreen people, the closer the wider
+        if (toggleInteration.isOn)
+        {
+            for (int t3 = 0; t3 < globalPeopleList.Count - 1; t3++)
+            {
+                PeopleObj pplObj1 = globalPeopleList[t3];
+                for (int t4 = t3 + 1; t4 < globalPeopleList.Count; t4++)
+                {
+                    PeopleObj pplObj2 = globalPeopleList[t4];
+                    if (pplObj1.isOnScreen && pplObj2.isOnScreen)
+                    {
+                        float d = Vector3.Distance(pplObj1.posJoint1Projected, pplObj2.posJoint1Projected);
+                        float w = interactionWidth * Mathf.Pow(1.0f / d, 2.0f);
+                        GameObject interactionLine = DrawLine(pplObj1.posJoint1Projected, pplObj2.posJoint1Projected, w, helperMaterials[1], Time.deltaTime);
+                        tmpVizGOs.Add(interactionLine);
+                    }
+                }
+            }
+        }
+
+
+        // purge missing object for tmpVizGOs every frame
         for (int t1 = tmpVizGOs.Count - 1; t1 > -1; t1 --)
         {
             if (tmpVizGOs[t1] == null)
@@ -337,7 +371,8 @@ public class PoseVizGUID : MonoBehaviour
 
     void OnSliderLifeSpan()
     {
-        foreach(GameObject myGO in tmpVizGOs)
+        // destroy all temp viz GOs
+        foreach (GameObject myGO in tmpVizGOs)
         {
             Destroy(myGO);
         }
@@ -354,12 +389,6 @@ public class PoseVizGUID : MonoBehaviour
 
     void OnSliderTrajectoryLS()
     {
-        // destroy temp viz GOs
-        foreach (GameObject myGO in tmpVizGOs)
-        {
-            Destroy(myGO);
-        }
-        tmpVizGOs = new List<GameObject>();
         // clear all the trajectory list
         foreach(PeopleObj pplObj in globalPeopleList)
         {
