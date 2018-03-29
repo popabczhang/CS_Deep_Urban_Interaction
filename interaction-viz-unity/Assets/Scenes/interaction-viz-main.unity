@@ -692,7 +692,6 @@ GameObject:
   - component: {fileID: 541874835}
   - component: {fileID: 541874837}
   - component: {fileID: 541874839}
-  - component: {fileID: 541874838}
   m_Layer: 0
   m_Name: Pose Viz
   m_TagString: Untagged
@@ -784,19 +783,8 @@ MonoBehaviour:
   linkWidth: 0.02
   colorAlpha: 0.5
   sliderLifeSpan: {fileID: 2073772193}
+  sliderAlpha: {fileID: 2000391839}
   tmpVizGOs: []
---- !u!114 &541874838
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 541874834}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6e9631e0cd9ee5e4d8e1d202497cf2c9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  slider: {fileID: 2000391839}
 --- !u!114 &541874839
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -835,6 +823,7 @@ MonoBehaviour:
   linkWidth: 0.02
   colorAlpha: 0.5
   sliderLifeSpan: {fileID: 2073772193}
+  sliderAlpha: {fileID: 2000391839}
   tmpVizGOs: []
 --- !u!1001 &543126386
 Prefab:
@@ -2755,7 +2744,7 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 541874838}
+      - m_Target: {fileID: 541874837}
         m_MethodName: SendMessage
         m_Mode: 5
         m_Arguments:
@@ -2763,7 +2752,18 @@ MonoBehaviour:
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
-          m_StringArgument: OnSlider
+          m_StringArgument: OnSliderAlpha
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 541874839}
+        m_MethodName: SendMessage
+        m_Mode: 5
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: OnSliderAlpha
           m_BoolArgument: 0
         m_CallState: 2
     m_TypeName: UnityEngine.UI.Slider+SliderEvent, UnityEngine.UI, Version=1.0.0.0,
@@ -2859,7 +2859,7 @@ MonoBehaviour:
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
-          m_StringArgument: OnUpdateLifeSpan
+          m_StringArgument: OnSliderLifeSpan
           m_BoolArgument: 0
         m_CallState: 2
       - m_Target: {fileID: 541874839}
@@ -2870,7 +2870,7 @@ MonoBehaviour:
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
-          m_StringArgument: OnUpdateLifeSpan
+          m_StringArgument: OnSliderLifeSpan
           m_BoolArgument: 0
         m_CallState: 2
     m_TypeName: UnityEngine.UI.Slider+SliderEvent, UnityEngine.UI, Version=1.0.0.0,

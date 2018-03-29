@@ -42,6 +42,7 @@ public class PoseViz : MonoBehaviour
     public float linkWidth;
     public float colorAlpha;
     public Slider sliderLifeSpan;
+    public Slider sliderAlpha;
     public List<GameObject> tmpVizGOs = new List<GameObject>();
 
     void Start()
@@ -237,13 +238,19 @@ public class PoseViz : MonoBehaviour
     }
 
 
-    void OnUpdateLifeSpan()
+    void OnSliderLifeSpan()
     {
-        foreach(GameObject myGO in tmpVizGOs)
+        foreach (GameObject myGO in tmpVizGOs)
         {
             Destroy(myGO);
         }
         lifeSpan = sliderLifeSpan.value * 299.0f + 1.0f;
+    }
+
+
+    void OnSliderAlpha()
+    {
+        colorAlpha = sliderAlpha.value;
     }
 
 }
