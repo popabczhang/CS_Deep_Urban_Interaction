@@ -86,7 +86,7 @@ public class PoseViz : MonoBehaviour
             Material currentPersonMaterial = helperMaterials[i % 3];
             Color colorTmp = currentPersonMaterial.color;
             currentPersonMaterial.color = new Color(colorTmp.r, colorTmp.g, colorTmp.b, colorAlpha);
-
+            
             // only viz if left and right feet are both present confidently
             if ((xLeftFoot > 0.0f && yLeftFoot > 0.0f && confLeftFoot >= confidentThreshold) && (xRightFoot > 0.0f && yRightFoot > 0.0f && confRightFoot >= confidentThreshold))
             {
@@ -114,10 +114,25 @@ public class PoseViz : MonoBehaviour
                     // move to viz location
                     plane.transform.position = hit.point;
                     // rotate face to cam
-                    plane.transform.LookAt(new Vector3(cam.transform.position.x, 0f, cam.transform.position.z));
+                    plane.transform.LookAt(new Vector3(cam.transform.position.x, plane.transform.position.y, cam.transform.position.z));
                     plane.transform.Rotate(new Vector3(0f, 180f, 0f));
-                    // add plane to layer 10: Billboard to prevent raycast for center bottom point
-                    plane.layer = 10;
+
+                    // viz person ID in space
+                    float x2 = currentOpenPoseJson.people[i].pose_keypoints[1 * 3 + xx];
+                    float y2 = currentOpenPoseJson.people[i].pose_keypoints[1 * 3 + yy];
+                    Vector3 posJoint1 = new Vector3(x2, videoPixelHeight - y2, 0f);
+                    RaycastHit hit3;
+                    Ray ray3 = cam.ScreenPointToRay(posJoint1);
+                    if (Physics.Raycast(ray3, out hit3, 100))
+                    {
+                        Vector3 posJoint1Projected = hit3.point + new Vector3(0f, 0.4f, 0f);
+                        GameObject idText = DrawText(i.ToString(), posJoint1Projected, 0.1f, TextAlignment.Center, TextAnchor.MiddleCenter);
+                        tmpVizGOs.Add(idText);
+                        Destroy(idText, Time.deltaTime * lifeSpan);
+                        // rotate face to cam
+                        idText.transform.LookAt(new Vector3(cam.transform.position.x, idText.transform.position.y, cam.transform.position.z));
+                        idText.transform.Rotate(new Vector3(0f, 180f, 0f));
+                    }
 
                     // loop each key point
                     List<Vector3> keyPtProjPoss = new List<Vector3>();
@@ -126,7 +141,7 @@ public class PoseViz : MonoBehaviour
                         float x = currentOpenPoseJson.people[i].pose_keypoints[j * 3 + xx];
                         float y = currentOpenPoseJson.people[i].pose_keypoints[j * 3 + yy];
                         float c = currentOpenPoseJson.people[i].pose_keypoints[j * 3 + conf];
-                        Vector3 keyPoint = new Vector3(x, videoPixelHeight - y, 0);
+                        Vector3 keyPoint = new Vector3(x, videoPixelHeight - y, 0f);
                         /*
                         // screen
                         // add sphere and remove its collider
@@ -202,6 +217,23 @@ public class PoseViz : MonoBehaviour
         lr.SetPosition(1, end);
         Destroy(myLine, duration);
         return myLine;
+    }
+
+
+    GameObject DrawText(string text, Vector3 position, float size, TextAlignment alignment, TextAnchor anchor)
+    {
+        GameObject myText = new GameObject("myText");
+        myText.transform.position = position;
+
+        TextMesh myTextMesh = myText.AddComponent<TextMesh>();
+        myText.AddComponent<MeshRenderer>();
+            
+        myTextMesh.text = text;
+        myTextMesh.characterSize = size;
+        myTextMesh.alignment = alignment;
+        myTextMesh.anchor = anchor;
+
+        return myText;
     }
 
 
