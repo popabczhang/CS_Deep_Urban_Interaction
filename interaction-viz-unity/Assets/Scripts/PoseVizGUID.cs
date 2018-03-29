@@ -44,6 +44,9 @@ public class PoseVizGUID : MonoBehaviour
     public Slider sliderLifeSpan;
     public Slider sliderAlpha;
     public List<GameObject> tmpVizGOs = new List<GameObject>();
+    public List<PeopleObj> globalPeopleList = new List<PeopleObj>();
+    public float existCheckDistance;
+
 
     void Start()
     {
@@ -76,19 +79,21 @@ public class PoseVizGUID : MonoBehaviour
         // loop people in json
         for (int i = 0; i < currentOpenPoseJson.people.Count; i++)
         {
-            float xLeftFoot = currentOpenPoseJson.people[i].pose_keypoints[3 * jointIDLeftFoot + xx];
-            float yLeftFoot = currentOpenPoseJson.people[i].pose_keypoints[3 * jointIDLeftFoot + yy];
-            float confLeftFoot = currentOpenPoseJson.people[i].pose_keypoints[3 * jointIDLeftFoot + conf];
-            float xRightFoot = currentOpenPoseJson.people[i].pose_keypoints[3 * jointIDRightFoot + xx];
-            float yRightFoot = currentOpenPoseJson.people[i].pose_keypoints[3 * jointIDRightFoot + yy];
-            float confRightFoot = currentOpenPoseJson.people[i].pose_keypoints[3 * jointIDRightFoot + conf];
+            PeopleJsonObj currentPeopleJson = currentOpenPoseJson.people[i];
+
+            float xLeftFoot = currentPeopleJson.pose_keypoints[3 * jointIDLeftFoot + xx];
+            float yLeftFoot = currentPeopleJson.pose_keypoints[3 * jointIDLeftFoot + yy];
+            float confLeftFoot = currentPeopleJson.pose_keypoints[3 * jointIDLeftFoot + conf];
+            float xRightFoot = currentPeopleJson.pose_keypoints[3 * jointIDRightFoot + xx];
+            float yRightFoot = currentPeopleJson.pose_keypoints[3 * jointIDRightFoot + yy];
+            float confRightFoot = currentPeopleJson.pose_keypoints[3 * jointIDRightFoot + conf];
             Color currentPersonColor = helperMaterials[i % 3].color;
             Material currentPersonMaterial = helperMaterials[i % 3];
             Color colorTmp = currentPersonMaterial.color;
             currentPersonMaterial.color = new Color(colorTmp.r, colorTmp.g, colorTmp.b, colorAlpha);
             
             // only viz if left and right feet are both present confidently
-            if ((xLeftFoot > 0.0f && yLeftFoot > 0.0f && confLeftFoot >= confidentThreshold) && (xRightFoot > 0.0f && yRightFoot > 0.0f && confRightFoot >= confidentThreshold))
+            if (confLeftFoot >= confidentThreshold && confRightFoot >= confidentThreshold)
             {
                 Vector3 pxlLeftFoot = new Vector3(xLeftFoot, videoPixelHeight - yLeftFoot, 0.0f);
                 //Debug.Log("pxlLeftFoot: " + pxlLeftFoot.ToString());
@@ -133,6 +138,24 @@ public class PoseVizGUID : MonoBehaviour
                         idText.transform.LookAt(new Vector3(cam.transform.position.x, idText.transform.position.y, cam.transform.position.z));
                         idText.transform.Rotate(new Vector3(0f, 180f, 0f));
                     }
+
+
+                    // add this valid person to global people list if not found close enough one in the list, otherwise update
+                    PeopleObj currentPeopleObj = new PeopleObj();
+                    currentPeopleObj = (PeopleObj)currentPeopleJson;
+                    currentPeopleObj.GUID = (int)Random.Range(0f, 999999999f);
+                    currentPeopleObj.centerBottomPositionWorld = hit.point;
+                    currentPeopleObj.posJoint1Projected = hit3.point;
+                    if (IsExist(currentPeopleObj) == false)
+                    {
+                        Debug.Log("no exist, add to the list");
+                        globalPeopleList.Add(currentPeopleObj);
+                    }
+                    else
+                    {
+                        Debug.Log("exist, update the one in the list");
+                    }
+
 
                     // loop each key point
                     List<Vector3> keyPtProjPoss = new List<Vector3>();
@@ -212,7 +235,8 @@ public class PoseVizGUID : MonoBehaviour
         LineRenderer lr = myLine.GetComponent<LineRenderer>();
         lr.material = m;
         //lr.SetColors(color, color);
-        lr.SetWidth(w, w);
+        lr.startWidth = w;
+        lr.endWidth = w;
         lr.SetPosition(0, start);
         lr.SetPosition(1, end);
         Destroy(myLine, duration);
@@ -226,7 +250,6 @@ public class PoseVizGUID : MonoBehaviour
         myText.transform.position = position;
 
         TextMesh myTextMesh = myText.AddComponent<TextMesh>();
-        myText.AddComponent<MeshRenderer>();
             
         myTextMesh.text = text;
         myTextMesh.characterSize = size;
@@ -235,6 +258,25 @@ public class PoseVizGUID : MonoBehaviour
         myTextMesh.anchor = anchor;
 
         return myText;
+    }
+
+    bool IsExist(PeopleObj currentPeopleObj)
+    {
+        bool blnExist = false;
+        PeopleObj pplObj = new PeopleObj();
+        for (int i = 0; i < globalPeopleList.Count; i ++)
+        {
+            pplObj = globalPeopleList[i];
+            float d = Vector3.Distance(currentPeopleObj.centerBottomPositionWorld, pplObj.centerBottomPositionWorld);
+            if (d <= existCheckDistance)
+            {
+                blnExist = true;
+                // update the global people obj list
+                globalPeopleList[i] = currentPeopleObj;
+                break;
+            }
+        }
+        return blnExist;
     }
 
 
@@ -253,4 +295,27 @@ public class PoseVizGUID : MonoBehaviour
         colorAlpha = sliderAlpha.value;
     }
 
+}
+
+
+[System.Serializable]
+public class PeopleObj
+{
+    // same as peopleJsonObject
+    public float[] pose_keypoints;
+    public float[] face_keypoints;
+    public float[] hand_left_keypoints;
+    public float[] hand_right_keypoints;
+
+    // new
+    public int GUID = -1;
+    public Vector3 centerBottomPositionWorld = Vector3.zero;
+    public Vector3 posJoint1Projected = Vector3.zero;
+
+    // cast from peopleJsonObj
+    public static explicit operator PeopleObj(PeopleJsonObj obj)
+    {
+        PeopleObj output = new PeopleObj() { pose_keypoints = obj.pose_keypoints, face_keypoints = obj.face_keypoints, hand_left_keypoints = obj.hand_left_keypoints, hand_right_keypoints = obj.hand_right_keypoints };
+        return output;
+    }
 }

@@ -44,12 +44,12 @@ public class OpenPoseJsonParsing : MonoBehaviour {
 public class OpenPoseJson
 {
     public float version;
-    public List<peopleJsonObj> people;
+    public List<PeopleJsonObj> people;
 }
 
 
 [System.Serializable]
-public class peopleJsonObj
+public class PeopleJsonObj
 {
     public float[] pose_keypoints;
     public float[] face_keypoints;
