@@ -44,7 +44,6 @@ public class PoseViz : MonoBehaviour
     public Slider sliderLifeSpan;
     public List<GameObject> tmpVizGOs = new List<GameObject>();
 
-
     void Start()
     {
         /*
@@ -126,7 +125,7 @@ public class PoseViz : MonoBehaviour
                     if (Physics.Raycast(ray3, out hit3, 100))
                     {
                         Vector3 posJoint1Projected = hit3.point + new Vector3(0f, 0.4f, 0f);
-                        GameObject idText = DrawText(i.ToString(), posJoint1Projected, 0.1f, TextAlignment.Center, TextAnchor.MiddleCenter);
+                        GameObject idText = DrawText(i.ToString(), posJoint1Projected, 0.1f, new Color(1f,1f,1f, colorAlpha), TextAlignment.Center, TextAnchor.MiddleCenter);
                         tmpVizGOs.Add(idText);
                         Destroy(idText, Time.deltaTime * lifeSpan);
                         // rotate face to cam
@@ -220,7 +219,7 @@ public class PoseViz : MonoBehaviour
     }
 
 
-    GameObject DrawText(string text, Vector3 position, float size, TextAlignment alignment, TextAnchor anchor)
+    GameObject DrawText(string text, Vector3 position, float size, Color color, TextAlignment alignment, TextAnchor anchor)
     {
         GameObject myText = new GameObject("myText");
         myText.transform.position = position;
@@ -230,6 +229,7 @@ public class PoseViz : MonoBehaviour
             
         myTextMesh.text = text;
         myTextMesh.characterSize = size;
+        myTextMesh.color = color;
         myTextMesh.alignment = alignment;
         myTextMesh.anchor = anchor;
 
@@ -297,6 +297,7 @@ public class BodyPartLink
 {
     public int[] link;
 }
+
 
 
 /*
