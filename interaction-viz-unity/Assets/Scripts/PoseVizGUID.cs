@@ -38,14 +38,17 @@ public class PoseVizGUID : MonoBehaviour
     public Image imageVideo;
     public string bodyPartLinkJsonFile = "Assets/Resources/Data/body part links.json";
     public BodyPartLinks bodyPartLinks;
-    public float lifeSpan; // (distroyDuration) deltatime multiplier
+    public float lifeSpan; // # of frames (distroyDuration = deltatime * lifeSpan)
+    public int trajectoryLifeSpan; // # of allowed history points
     public float linkWidth;
     public float colorAlpha;
     public Slider sliderLifeSpan;
     public Slider sliderAlpha;
+    public Slider sliderTrajectoryLS;
     public List<GameObject> tmpVizGOs = new List<GameObject>();
     public List<PeopleObj> globalPeopleList = new List<PeopleObj>();
     public float existCheckDistance;
+    public float trajectoryWidth;
 
 
     void Start()
@@ -146,15 +149,24 @@ public class PoseVizGUID : MonoBehaviour
                     currentPeopleObj.GUID = (int)Random.Range(0f, 999999999f);
                     currentPeopleObj.centerBottomPositionWorld = hit.point;
                     currentPeopleObj.posJoint1Projected = hit3.point;
+                    // put isOnScreen to false for all the people obj in global list first
+                    foreach (PeopleObj pplObj in globalPeopleList)
+                    {
+                        pplObj.isOnScreen = false;
+                    }
+                    // this will overwite isOnScreen
+                    currentPeopleObj.isOnScreen = true;
+                    // check exist and update at same time in "IsExist" function
                     if (IsExist(currentPeopleObj) == false)
                     {
-                        Debug.Log("no exist, add to the list");
+                        //Debug.Log("no exist, add to the list");
                         globalPeopleList.Add(currentPeopleObj);
                     }
                     else
                     {
                         //Debug.Log("exist, update the one in the list");
                     }
+
 
                     // loop each key point
                     List<Vector3> keyPtProjPoss = new List<Vector3>();
@@ -235,6 +247,17 @@ public class PoseVizGUID : MonoBehaviour
         }
 
 
+        // viz the trajectory for each person in global people list
+        foreach (PeopleObj pplObj in globalPeopleList)
+        {
+            for(int t2 = pplObj.trajectory.Count - 1; t2 > 0; t2 --)
+            {
+                GameObject trajectoryLine = DrawLine(pplObj.trajectory[t2], pplObj.trajectory[t2-1], trajectoryWidth, helperMaterials[2], Time.deltaTime);
+                tmpVizGOs.Add(trajectoryLine);
+            }
+        }
+
+
         // purge missing object for tmpVizGOs every frame{
         for (int t1 = tmpVizGOs.Count - 1; t1 > -1; t1 --)
         {
@@ -278,6 +301,8 @@ public class PoseVizGUID : MonoBehaviour
         return myText;
     }
 
+
+    // check if the current people exists in the global people list
     bool IsExist(PeopleObj currentPeopleObj)
     {
         bool blnExist = false;
@@ -286,11 +311,21 @@ public class PoseVizGUID : MonoBehaviour
         {
             pplObj = globalPeopleList[i];
             float d = Vector3.Distance(currentPeopleObj.centerBottomPositionWorld, pplObj.centerBottomPositionWorld);
-            if (d <= existCheckDistance)
+            if (d <= existCheckDistance) // found exist! 
             {
                 blnExist = true;
                 // keep the GUID
                 currentPeopleObj.GUID = pplObj.GUID;
+                // update the trajectory
+                if (trajectoryLifeSpan != 0)
+                {
+                    currentPeopleObj.trajectory = globalPeopleList[i].trajectory;
+                    currentPeopleObj.trajectory.Add(currentPeopleObj.posJoint1Projected);
+                    if (currentPeopleObj.trajectory.Count >= trajectoryLifeSpan)
+                    {
+                        currentPeopleObj.trajectory.RemoveAt(0);
+                    }
+                }
                 // update the global people obj list
                 globalPeopleList[i] = currentPeopleObj;
                 break;
@@ -307,13 +342,30 @@ public class PoseVizGUID : MonoBehaviour
             Destroy(myGO);
         }
         tmpVizGOs = new List<GameObject>();
-        lifeSpan = sliderLifeSpan.value * 299.0f + 1.0f;
+        lifeSpan = sliderLifeSpan.value;
     }
 
 
     void OnSliderAlpha()
     {
         colorAlpha = sliderAlpha.value;
+    }
+
+
+    void OnSliderTrajectoryLS()
+    {
+        // destroy temp viz GOs
+        foreach (GameObject myGO in tmpVizGOs)
+        {
+            Destroy(myGO);
+        }
+        tmpVizGOs = new List<GameObject>();
+        // clear all the trajectory list
+        foreach(PeopleObj pplObj in globalPeopleList)
+        {
+            pplObj.trajectory = new List<Vector3>();
+        }
+        trajectoryLifeSpan = (int)sliderTrajectoryLS.value;
     }
 
 }
@@ -332,6 +384,8 @@ public class PeopleObj
     public int GUID = -1;
     public Vector3 centerBottomPositionWorld = Vector3.zero;
     public Vector3 posJoint1Projected = Vector3.zero;
+    public bool isOnScreen = false;
+    public List<Vector3> trajectory = new List<Vector3>();
 
     // cast from peopleJsonObj
     public static explicit operator PeopleObj(PeopleJsonObj obj)
