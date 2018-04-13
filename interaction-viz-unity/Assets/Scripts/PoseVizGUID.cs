@@ -71,7 +71,7 @@ public class PoseVizGUID : MonoBehaviour
         // parsing json for foot keypoints
         VideoPlayer vp = this.transform.GetComponent<VideoPlayer>();
         currentJsonFrame = (int)vp.frame % maxJsonFrameCount;
-        currentJsonString = System.IO.File.ReadAllText(openPoseJsonPath + "/v1_" + currentJsonFrame.ToString("000000000000") + "_keypoints.json");
+        currentJsonString = System.IO.File.ReadAllText(openPoseJsonPath + "/v2_" + currentJsonFrame.ToString("000000000000") + "_keypoints.json");
         //Debug.Log(currentJsonString);
         currentOpenPoseJson = JsonUtility.FromJson<OpenPoseJson>(currentJsonString);
 
