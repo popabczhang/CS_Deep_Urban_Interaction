@@ -1,0 +1,247 @@
+190106
+1. 
+resnet18 transfer learning
+    epoch 10, batch 256, nvidia quadro m1200 (dell laptop)
+simplified training set
+    mask black all area that is not boxed by the current two persons
+    # of train: no-10000, yes-3787; # of valid: no-1000, yes-421)
+resnet18 input
+    whole image scaled to size (224,224)
+result (best typical)
+    Train Loss: 0.5100498201948759
+    Train Acc:  0.7443243635308624
+    Valid Loss: 0.5252885289967354
+    Valid Acc:  0.7318789584799437
+epochs took for stable or overfitting
+    7
+time for training
+    1-2 min/epoch
+    15-20 min for 10 epochs
+
+
+190117
+1.
+resnet50 transfer learning
+    epoch 5, batch 128, nvidia quadro m1200 (dell laptop)
+simplified training set
+    mask black all area that is not boxed by the current two persons
+    # of train: no-10000, yes-3787; # of valid: no-1000, yes-421)
+resnet50 input
+    whole image scaled to size (224,224)
+result (best typical)
+    Train Loss: 0.3630687834613515
+    Train Acc:  0.8328860520780446
+    Valid Loss: 0.3837568977615684
+    Valid Acc:  0.8346235045742435
+epochs took for stable or overfitting
+    4
+time for training
+    1-2 min/epoch
+    15-20 min for 10 epochs
+
+2.
+resnet101 transfer learning
+    epoch 20, batch 220, nvidia quadro m1200 (dell laptop)
+simplified training set
+    mask black all area that is not boxed by the current two persons
+    # of train: no-10000, yes-3787; # of valid: no-1000, yes-421)
+resnet101 input
+    whole image scaled to size (224,224)
+result (best typical)
+  Train Loss: 0.3423636091354665
+  Train Acc:  0.8476100674548488
+  Valid Loss: 0.3642603423627307
+  Valid Acc:  0.844475721323012
+epochs took for stable or overfitting
+    (drop at epoch 3, up and drop again, not enough data I guess?)
+    13
+time for training
+    ~5 min/epoch
+
+
+3.
+resnet152 transfer learning
+    epoch 20, batch 220, nvidia quadro m1200 (dell laptop)
+simplified training set
+    mask black all area that is not boxed by the current two persons
+    # of train: no-10000, yes-3787; # of valid: no-1000, yes-421)
+resnet152 input
+    whole image scaled to size (224,224)
+result (best typical)
+    Train Loss: 0.3366272767554895
+    Train Acc:  0.8454341045912817
+    Valid Loss: 0.337724668429319
+    Valid Acc:  0.8501055594651654
+epochs took for stable or overfitting
+    (up and drop multiple times)
+    18
+time for training
+    ~7 min/epoch
+
+
+190117
+1.
+resnet152 transfer learning
+    epoch 20, batch 128, nvidia quadro m1200 (dell laptop)
+simplified training set
+    mask black all area that is not boxed by the current two persons, and crop to extent
+    # of train: no-10000, yes-3787; # of valid: no-1000, yes-421)
+resnet152 input
+    whole image scaled to size (224,224)
+result (best typical)
+    Train Loss: 0.2627744188014389
+    Train Acc:  0.8919271777761659
+    Valid Loss: 0.25952362661878464
+    Valid Acc:  0.9007741027445461
+epochs took for stable or overfitting
+    5
+time for training
+    ~7 min/epoch
+
+
+2.
+resnet18 transfer learning
+    epoch 20, batch 400, nvidia quadro m1200 (dell laptop)
+simplified training set
+    mask black all area that is not boxed by the current two persons, and crop to extent
+    # of train: no-10000, yes-3787; # of valid: no-1000, yes-421)
+resnet18 input
+    whole image scaled to size (224,224)
+result (best typical)
+    Train Loss: 0.27617231059270675
+    Train Acc:  0.8851816928991079
+    Valid Loss: 0.26830608881669177
+    Valid Acc:  0.8923293455313159
+epochs took for stable or overfitting
+    6
+time for training
+    ~3 min/epoch
+
+
+3.
+resnet18 whole model training
+    epoch 20, batch 128, nvidia quadro m1200 (dell laptop)
+simplified training set
+    mask black all area that is not boxed by the current two persons, and crop to extent
+    # of train: no-10000, yes-3787; # of valid: no-1000, yes-421)
+resnet18 input
+    whole image scaled to size (224,224)
+result (best typical)
+    Train Loss: 0.08560754766342836
+    Train Acc:  0.9675781533328498
+    Valid Loss: 0.19196321124199156
+    Valid Acc:  0.928219563687544
+epochs took for stable or overfitting
+    8
+time for training
+    ~4 min/epoch
+
+
+4.
+resnet152 whole model training
+    epoch 20, batch 10, nvidia quadro m1200 (dell laptop)
+simplified training set
+    mask black all area that is not boxed by the current two persons, and crop to extent
+    # of train: no-10000, yes-3787; # of valid: no-1000, yes-421)
+resnet18 input
+    whole image scaled to size (224,224)
+result (best typical)
+    Train Loss: 0.27616189886377646
+    Train Acc:  0.8831507942264452
+    Valid Loss: 0.2562108329437636
+    Valid Acc:  0.9014778325123153
+epochs took for stable or overfitting
+    6
+time for training
+    ~25 min/epoch
+
+
+190202
+1.
+resnet18 whole model training
+    epoch 20, batch 400, nvidia tesla k80 (crestle.ai)
+simplified training set
+    mask black all area that is not boxed by the current two persons, and crop to extent
+    # of train: no-10000, yes-3787; # of valid: no-1000, yes-421)
+resnet18 input
+    whole image scaled to size (224,224)
+result (best typical)
+    Train Loss: 0.08560754766342836
+    Train Acc:  0.9675781533328498
+    Valid Loss: 0.19196321124199156
+    Valid Acc:  0.928219563687544
+epochs took for stable or overfitting
+    8
+time for training
+    ~1.6 min/epoch
+
+
+2.
+resnet152 whole model training
+    epoch 20, batch 50, nvidia tesla k80 (crestle.ai)
+simplified training set
+    mask black all area that is not boxed by the current two persons, and crop to extent
+    # of train: no-10000, yes-3787; # of valid: no-1000, yes-421)
+resnet18 input
+    whole image scaled to size (224,224)
+result (best typical)
+    Train Loss: 0.27616189886377646
+    Train Acc:  0.8831507942264452
+    Valid Loss: 0.2562108329437636
+    Valid Acc:  0.9014778325123153
+epochs took for stable or overfitting
+    6
+time for training
+    ~13 min/epoch
+
+
+190207
+1.
+resnet18 whole model training
+    epoch 20, batch 400, nvidia tesla v100 (aws)
+simplified training set
+    mask black all area that is not boxed by the current two persons, and crop to extent
+    # of train: no-10000, yes-3787; # of valid: no-1000, yes-421)
+resnet18 input
+    whole image scaled to size (224,224)
+result (best typical)
+    Train Loss: 0.08560754766342836
+    Train Acc:  0.9675781533328498
+    Valid Loss: 0.19196321124199156
+    Valid Acc:  0.928219563687544
+epochs took for stable or overfitting
+    8
+time for training
+    ~0.3 min/epoch
+
+
+2.
+resnet152 whole model training
+    epoch 20, batch 50, nvidia tesla v100 (aws)
+simplified training set
+    mask black all area that is not boxed by the current two persons, and crop to extent
+    # of train: no-10000, yes-3787; # of valid: no-1000, yes-421)
+resnet18 input
+    whole image scaled to size (224,224)
+result (best typical)
+    Train Loss: 0.27616189886377646
+    Train Acc:  0.8831507942264452
+    Valid Loss: 0.2562108329437636
+    Valid Acc:  0.9014778325123153
+epochs took for stable or overfitting
+    6
+time for training
+    ~2 min/epoch
+
+
+
+notes: 
+1. increase input W, H of the model
+    add two conv layer at begining
+2. add dropout and another fc layer (prevent overfit)
+3. test on another scene to see how it generalize
+4. resnet50 above overfitting, need more training data
+5. learning rate schedular
+6. real-time viz pipline
+7. people detection need to be improved
+8. Agata's architecture
